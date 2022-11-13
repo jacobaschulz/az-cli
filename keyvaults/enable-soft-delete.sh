@@ -1,5 +1,7 @@
-﻿
+﻿#!/bin/bash
 
-
-# enables/disables soft-delete on keyvault
-az resource update --id /subscriptions/xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/<resourceGroupName>/providers/Microsoft.KeyVault/vaults/<keyVaultName> --set properties.enablePurgeProtection=true properties.enableSoftDelete=true
+# Enables soft-delete for the below
+for kvs in $(az resource list --resource-type 'Microsoft.Keyvault/vaults' --query "[?properties.enableSoftDelete == false].id" -o tsv); do
+    echo "updating setting for ${kvs}"
+    az resource update --ids $kvs --set properties.enableSoftDelete=true;
+done
